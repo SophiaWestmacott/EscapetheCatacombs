@@ -25,13 +25,13 @@ public class PlayerHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        healthText = GameObject.Find("Health").GetComponent<Text>();
+        //healthText = GameObject.Find("Health").GetComponent<Text>();
         deathText = GameObject.Find("DeathText").GetComponent<Text>();
         respawnText = GameObject.Find("RespawnText").GetComponent<Text>();
         deathPanel = GameObject.Find("DeathPanel").GetComponent<Image>();
         lightCheck = GameObject.Find("lightChecker").GetComponent<FPSLightCheck>();
         playerHealth = playerMaxHealth;
-        healthText.text = "Health: " + playerHealth;
+        //healthText.text = "Health: " + playerHealth;
         playerIsAlive = true;
         respawnText.text = "";
         deathText.text = "";
