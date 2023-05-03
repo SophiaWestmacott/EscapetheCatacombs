@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da7726c56eacdbb4a90038b84fca31a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Items: []
+  Items:
+  - {fileID: 11400000, guid: 5de02ab8492c357408b22b9e96a60a8f, type: 2}
   invCanvas: {fileID: 0}
   g_inventoryPanel: {fileID: 0}
   g_slots: []
+  inventoryKey: 0

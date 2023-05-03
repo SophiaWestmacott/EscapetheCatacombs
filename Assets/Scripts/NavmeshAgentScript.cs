@@ -28,7 +28,7 @@ public class NavmeshAgentScript : MonoBehaviour
     private bool hadChased;
     public Vector3 lastSeenAt;
     public float delay = 3f;
-    public float patrolCheckRange;
+    public float patrolCheckRange = 0.5f;
 
     public bool jobIsPatrol;
     public bool jobIsStandGaurd;
@@ -50,7 +50,7 @@ public class NavmeshAgentScript : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         PatrolPoint = 0;
         PatrolPointCount = wayPoints.Length;
-        patrolCheckRange = 0.5f;
+        //patrolCheckRange = 0.5f;
 
         if (!jobIsPatrol && !jobIsStandGaurd)
         {

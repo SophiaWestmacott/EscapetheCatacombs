@@ -56,6 +56,7 @@ public class BasicInteract : MonoBehaviour
     private Transform carryItemPosition;
     private Rigidbody rbOfCarriedItem;
 
+    public bool inCinematic;
 
     void Start()
     {
@@ -66,6 +67,8 @@ public class BasicInteract : MonoBehaviour
         rayHit = false;
         canInteract = false;
         CrosshairDot = GameObject.Find("CrosshairDot").GetComponent<Image>();
+
+        inCinematic = false;
     }
 
     void Update()
@@ -85,108 +88,115 @@ public class BasicInteract : MonoBehaviour
             }
         }
 
-        g_ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Raycast From Mouse Position 
-        if (Physics.Raycast(g_ray, out hitObject, rayLength, layerToHit)) // If raycast hits collider... 
+        if (!inCinematic)
         {
-            if (hitObject.collider.tag == "Interact") // If that collider has 'Interact' tag - Implies a switch / device, not an object to pick up
+
+
+            g_ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Raycast From Mouse Position 
+            if (Physics.Raycast(g_ray, out hitObject, rayLength, layerToHit)) // If raycast hits collider... 
             {
-                // THIS STUFF IS ABOUT FIRING PROMPTS FOR SOMETHING YOU CAN INTERACT WITH IN THE WORLD
-                rayHit = true;
-                interactiveObject = hitObject.collider.gameObject;
-                targetIsInteractive = true;
-                if (interactablePromptsText)
+                if (hitObject.collider.tag == "Interact") // If that collider has 'Interact' tag - Implies a switch / device, not an object to pick up
                 {
-                    intPromptTxt.enabled = true;
-                    intPromptTxt.text = intMessage;
-                }
-
-            }
-            else if (hitObject.collider.tag == "Collectable") // If that collider has 'Collectable' tag - Implies thing to pick up and keep
-            {
-                // THIS STUFF IS ABOUT FIRING PROMPTS FOR SOMETHING YOU CAN TAKE TO INVENTORY
-                rayHit = true;
-                targetIsCollctable = true;
-                interactiveObject = hitObject.collider.gameObject;
-                if (collectablePromptsText)
-                {
-                    collectPromptTxt.enabled = true;
-                    collectPromptTxt.text = collectMessage;
-                }
-            }
-
-            else if (hitObject.collider.tag == "Carryable") // if raycast hits collider with tag - Implies thing to carry and put down.
-            {
-                // THIS STUFF IS ABOUT FIRING PROMPTS FOR SOMETHING YOU CAN CARRY
-                rayHit = true;
-                interactiveObject = hitObject.collider.gameObject;
-                targetIsCarryable = true;
-                carryItemPosition = interactiveObject.transform;
-                if (carryablePromptsText)
-                {
-                    carryPromptTxt.enabled = true;
-                    carryPromptTxt.text = carryMessage;
-                }
-            }
-        }
-        else // IF RAYCAST DOESN'T HIT ONE OF THOSE THINGS, RESET RAYCAST AND DEACTIVATE ALL PROMPTS
-        {
-            //ResetPrompts();
-
-            rayHit = false;
-            interactiveObject = null;
-            canInteract = false;
-            targetIsCarryable = false;
-            targetIsCollctable = false;
-            targetIsInteractive = false;
-            collectPromptTxt.enabled = false;
-            intPromptTxt.enabled = false;
-            if (carriedItem == null)
-            {
-                carryPromptTxt.enabled = false;
-            }
-        }
-
-        if (rayHit == true) //Turns the Crosshair green
-        {
-            //Debug.Log("RaycastHit");
-            CrosshairDot.GetComponent<Renderer>();
-            CrosshairDot.color = Color.green;
-            canInteract = true;
-        }
-
-        if (rayHit == false) // resets colour of crosshair
-        {
-            CrosshairDot.GetComponent<Renderer>();
-            CrosshairDot.color = Color.white;
-            canInteract = false;
-        }
-
-        // THIS IS WHERE ACTUAL INTERACTIONS HAPPEN, AND RESULT IN CALLING FUNCTIONS APPROPRIATE FOR THAT.
-
-        if (canInteract == true)
-        {
-            if (Input.GetKeyUp(interactOrPickUpKey) && (interactiveObject != null))
-            {
-                if (targetIsCarryable)
-                {
-                    CarryObject(); // PICKS IT UP, THAT'S IT.
-                }
-                else if (targetIsCollctable)
-                {
-                    if (useInventory)
+                    // THIS STUFF IS ABOUT FIRING PROMPTS FOR SOMETHING YOU CAN INTERACT WITH IN THE WORLD
+                    rayHit = true;
+                    interactiveObject = hitObject.collider.gameObject;
+                    targetIsInteractive = true;
+                    if (interactablePromptsText)
                     {
-                        onInvItemTaken?.Invoke(interactiveObject.GetComponent<InvItemID>().ID); // ADD TO INVENTORY LIST
-                        interactiveObject.GetComponent<PickupThing>().CollectionEvent();
+                        intPromptTxt.enabled = true;
+                        intPromptTxt.text = intMessage;
                     }
 
-                    Destroy(interactiveObject); // REMOVE OBJECT FROM THE WORLD
                 }
-                else if (targetIsInteractive)
+                else if (hitObject.collider.tag == "Collectable") // If that collider has 'Collectable' tag - Implies thing to pick up and keep
                 {
-                    interactiveObject.GetComponent<Interactable>().TriggerEvent(); // ACTIVE THE 'TriggerEvent' FUNCTION ON THE OBJECT.
+                    // THIS STUFF IS ABOUT FIRING PROMPTS FOR SOMETHING YOU CAN TAKE TO INVENTORY
+                    rayHit = true;
+                    targetIsCollctable = true;
+                    interactiveObject = hitObject.collider.gameObject;
+                    if (collectablePromptsText)
+                    {
+                        collectPromptTxt.enabled = true;
+                        collectPromptTxt.text = collectMessage;
+                    }
+                }
+
+                else if (hitObject.collider.tag == "Carryable") // if raycast hits collider with tag - Implies thing to carry and put down.
+                {
+                    // THIS STUFF IS ABOUT FIRING PROMPTS FOR SOMETHING YOU CAN CARRY
+                    rayHit = true;
+                    interactiveObject = hitObject.collider.gameObject;
+                    targetIsCarryable = true;
+                    carryItemPosition = interactiveObject.transform;
+                    if (carryablePromptsText)
+                    {
+                        carryPromptTxt.enabled = true;
+                        carryPromptTxt.text = carryMessage;
+                    }
                 }
             }
+            else // IF RAYCAST DOESN'T HIT ONE OF THOSE THINGS, RESET RAYCAST AND DEACTIVATE ALL PROMPTS
+            {
+                //ResetPrompts();
+
+                rayHit = false;
+                interactiveObject = null;
+                canInteract = false;
+                targetIsCarryable = false;
+                targetIsCollctable = false;
+                targetIsInteractive = false;
+                collectPromptTxt.enabled = false;
+                intPromptTxt.enabled = false;
+                if (carriedItem == null)
+                {
+                    carryPromptTxt.enabled = false;
+                }
+            }
+
+            if (rayHit == true) //Turns the Crosshair green
+            {
+                //Debug.Log("RaycastHit");
+                CrosshairDot.GetComponent<Renderer>();
+                CrosshairDot.color = Color.green;
+                canInteract = true;
+            }
+
+            if (rayHit == false) // resets colour of crosshair
+            {
+                CrosshairDot.GetComponent<Renderer>();
+                CrosshairDot.color = Color.white;
+                canInteract = false;
+            }
+
+            // THIS IS WHERE ACTUAL INTERACTIONS HAPPEN, AND RESULT IN CALLING FUNCTIONS APPROPRIATE FOR THAT.
+
+            if (canInteract == true)
+            {
+                if (Input.GetKeyUp(interactOrPickUpKey) && (interactiveObject != null))
+                {
+                    if (targetIsCarryable)
+                    {
+                        CarryObject(); // PICKS IT UP, THAT'S IT.
+                    }
+                    else if (targetIsCollctable)
+                    {
+                        if (useInventory)
+                        {
+                            onInvItemTaken?.Invoke(interactiveObject.GetComponent<InvItemID>().ID); // ADD TO INVENTORY LIST
+                            interactiveObject.GetComponent<PickupThing>().CollectionEvent();
+                        }
+
+                        Destroy(interactiveObject); // REMOVE OBJECT FROM THE WORLD
+                    }
+                    else if (targetIsInteractive)
+                    {
+                        interactiveObject.GetComponent<Interactable>().TriggerEvent(); // ACTIVE THE 'TriggerEvent' FUNCTION ON THE OBJECT.
+                    }
+                }
+            }
+
         }
+
     }
 
     // TWO FUNCTIONS FOR CARRYABLE OBJEECTS ONLY

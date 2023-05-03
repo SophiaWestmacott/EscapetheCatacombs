@@ -26,13 +26,14 @@ public class PickupThing : MonoBehaviour
         if (other.gameObject.CompareTag("Player") && isRunOverPickUp)
         {
             CollectionEvent();
-            Destroy(gameObject);
+            
 
             if (this.GetComponent<InvItemID>() != null)
             {
                 GameObject itemToGrab = this.gameObject;
                 player.GetComponent<BasicInteract>().RunoverPickup(itemToGrab); // ADD TO INVENTORY LIST
             }
+            Destroy(gameObject);
         }
     }
 
