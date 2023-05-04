@@ -72,7 +72,7 @@ public class ViewZoneCheck : MonoBehaviour
     private void RayCastCheck()
     {
         guardPosition = parent.transform.position;
-        guardPosition.y = 0.417f;
+        guardPosition.y = parent.transform.position.y + 0.417f;
 
         direction = (target.transform.position - guardPosition).normalized; //direction FROM guard towards player    
         Ray g_ray = new Ray(guardPosition, direction);
