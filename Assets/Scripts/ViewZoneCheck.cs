@@ -8,6 +8,7 @@ public class ViewZoneCheck : MonoBehaviour
     public Vector3 guardPosition;
     public Transform target;
     private float sightRange;
+    public float guardHeightOffset = 0.417f;
     private RaycastHit hitThing;
     public bool inLOS = false;
     public Vector3 direction;
@@ -20,7 +21,8 @@ public class ViewZoneCheck : MonoBehaviour
         hitLayers = LayerMask.GetMask("Player") | LayerMask.GetMask("Default") | LayerMask.GetMask("Environment");
         target = GameObject.FindGameObjectWithTag("PlayerBody").transform;
         sightRange = parent.GetComponent<NavmeshAgentScript>().sightRange;
-        //lightChecker = GameObject.Find("lightChecker");
+        lightChecker = GameObject.Find("lightChecker");
+
     }
 
    private void FixedUpdate()
@@ -59,7 +61,7 @@ public class ViewZoneCheck : MonoBehaviour
     {
         if (other.gameObject.tag == "PlayerBody")
         {
-            Debug.Log("Player left enemy view zone");
+            //Debug.Log("Player left enemy view zone");
             inLOS = false;
 
             if (parent.gameObject.GetComponent<NavmeshAgentScript>().AIState == 1)
@@ -71,8 +73,11 @@ public class ViewZoneCheck : MonoBehaviour
 
     private void RayCastCheck()
     {
+        //float myY = parent.transform.position.y; 
         guardPosition = parent.transform.position;
-        guardPosition.y = parent.transform.position.y + 0.417f;
+        //guardPosition.y = myY;// + guardHeightOffset;
+        guardPosition.y = parent.transform.position.y + guardHeightOffset;
+        Debug.Log(guardPosition + " and " + parent.transform.position.y);
 
         direction = (target.transform.position - guardPosition).normalized; //direction FROM guard towards player    
         Ray g_ray = new Ray(guardPosition, direction);
@@ -82,10 +87,12 @@ public class ViewZoneCheck : MonoBehaviour
         {
             if (hitThing.collider.tag != "PlayerBody")
             {
+                //Debug.Log("Raycast hit a thing but NOT PlayerBoody. was " + hitThing.collider.tag);
                 inLOS = false;
             }
             else
             {
+                //Debug.Log("RAYCAST HIT PLAYERBODY - WOOOOOOOOOOOOOOOOOO!");
                 if (lightChecker.gameObject.GetComponent<FPSLightCheck>().isVisible == true)
                 {
                     inLOS = true;
@@ -99,6 +106,7 @@ public class ViewZoneCheck : MonoBehaviour
         }
         else
         {
+            //Debug.Log("Raycast hit nothing");
             inLOS = false;
         }
     }
